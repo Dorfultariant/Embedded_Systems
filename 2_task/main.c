@@ -5,28 +5,36 @@
 
 
 int main(void) {
-    // B ports
     // port B -> pins: 8,9,10,11,12,13
+    // port D -> pins: 0, 1, 2, 3, 4, 5, 6, 7
     // DDRx -> Data Direction, inputs and outputs    
-    // Using pins 8,9 as inputs and 10,11 as outputs
-    DDRB &= ~( 1 << PB0) & ~(1 << PB1); // Input
-    DDRB |= 0b00001100;                 // Output
+    // Using pins 3,5 as inputs and 9,10 as outputs
+    const int TRANS_B = PB1;
+    const int TRANS_C = PB2;
+    const int B_BTN = PD3;
+    const int C_BTN = PD5;
+
+    // Pinmodes:
+    DDRD &= ~( 1 << B_BTN) & ~(1 << C_BTN);  // Input
+    DDRB |= (1 << TRANS_B) | (1 << TRANS_C); // Output
+    
     // Read pins
-    while(true) {
-        int baseBtn = (PINB & (1 << PB0));
-        int collectorBtn = (PINB & (1 << PB1));
+    while(1) {
+        // Read states of pins
+        int B_BtnState = (PIND & (1 << B_BTN));
+        int C_BtnState = (PIND & (1 << C_BTN));
         
-        // PORTx write to port (B) Pxn defines the port and pin
-        if (baseBtn) {
-            PORTB |= (1 << PB2);
+        // PORTx write to port,  Pxn defines the port (x) and pin(n)
+        if (B_BtnState) {
+            PORTB |= (1 << TRANS_B);
         } else {
-            PORTB &= ~(1 << PB2);
+            PORTB &= ~(1 << TRANS_B);
         }
 
-        if (collectorBtn) {
-            PORTB |= (1 << PB3);
+        if (C_BtnState) {
+            PORTB |= (1 << TRANS_C);
         } else {
-            PORTB &= ~(1 << PB3);
+            PORTB &= ~(1 << TRANS_C);
         }
     }
 
